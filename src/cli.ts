@@ -1,12 +1,19 @@
 import { cli } from "cleye";
 import { version, description } from "../package.json";
+import { aireview } from "./commands/aireview";
 
-cli({
-  name: "aireview",
-  version,
-  help: {
-    description,
+const rawArgv = process.argv.slice(2);
+
+cli(
+  {
+    name: "aireview",
+    version,
+    help: {
+      description,
+    },
   },
-});
-
-console.log("Hello, cleye!");
+  (argv) => {
+    aireview();
+  },
+  rawArgv
+);
