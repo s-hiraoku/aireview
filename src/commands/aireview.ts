@@ -9,12 +9,8 @@ import {
   isCancel,
 } from "@clack/prompts";
 
-export const aireview = async (stageAll: boolean) => {
+export const aireview = async () => {
   intro(bgCyan(black(" aireview ")));
 
   const detectingFiles = spinner();
-
-  if (stageAll) {
-    await execa("git", ["add", "--update"]);
-  }
 };
