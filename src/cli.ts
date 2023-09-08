@@ -8,12 +8,21 @@ cli(
   {
     name: "aireview",
     version,
+    flags: {
+      all: {
+        type: Boolean,
+        description:
+          "Automatically stage changes in tracked files for the commit",
+        alias: "a",
+        default: false,
+      },
+    },
     help: {
       description,
     },
   },
   (argv) => {
-    aireview();
+    aireview(argv.flags.all);
   },
   rawArgv
 );
