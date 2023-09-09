@@ -1,0 +1,53 @@
+{
+  "name": "aireview-cli",
+  "version": "0.0.0-semantic-release",
+  "description": "AI code review of changes from git diffs.",
+  "author": "Hiraoku Shinichi <s.hiraoku@gmail.com>",
+  "keywords": [
+    "ai",
+    "git",
+    "review"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "aireview": "./dist/cli.mjs"
+  },
+  "scripts": {
+    "prepare": "simple-git-hooks",
+    "build": "pkgroll --minify",
+    "lint": "eslint --cache .",
+    "type-check": "tsc --noEmit",
+    "test": "tsx tests",
+    "dev": "tsx watch --conditions=development tests",
+    "prepack": "pnpm build && clean-pkg-json"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": "pnpm lint"
+  },
+  "volta": {
+    "node": "20.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.9",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "eslint": "^8.49.0",
+    "init": "^0.1.2",
+    "kolorist": "^1.8.0",
+    "pkgroll": "^1.11.0",
+    "tsx": "^3.12.8",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "cleye": "^1.3.2",
+    "execa": "^8.0.1"
+  }
+}

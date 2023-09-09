@@ -1,22 +1,3 @@
-# macOS
-.DS_Store
-
-# dotenv environment variables file
-.env
-.env.test
-
-# Distribution
-dist
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Output of 'npm pack'
-*.tgz
-
 # Logs
 logs
 *.log
@@ -34,12 +15,19 @@ coverage
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-app/release/app/dist
-app/release/build
-app/.erb/dll
+# OSX
+.DS_Store
+
+release/app/dist
+release/build
+.erb/dll
 
 .idea
 npm-debug.log.*
 *.css.d.ts
 *.sass.d.ts
 *.scss.d.ts
+
+# eslint ignores hidden directories by default:
+# https://github.com/eslint/eslint/issues/8429
+!.erb
