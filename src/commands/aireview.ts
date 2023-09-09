@@ -8,9 +8,13 @@ import {
   confirm,
   isCancel,
 } from "@clack/prompts";
+import { assertGitRepo } from "../utils/git";
 
 export const aireview = async () => {
   intro(bgCyan(black(" aireview ")));
+  await assertGitRepo();
 
-  const detectingFiles = spinner();
+  const extractingFiles = spinner();
+
+  extractingFiles.start("Detecting staged files");
 };
