@@ -13,7 +13,7 @@ cli(
       description,
     },
   },
-  (argv) => {
+  () => {
     aireview();
   },
   rawArgv
