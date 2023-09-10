@@ -8,7 +8,9 @@
     "review"
   ],
   "scripts": {
-    "cli:build": "cd cli && pkgroll --minify"
+    "app:start": "cd app && npm start",
+    "app:build": "cd app && npm run build",
+    "cli:build": "cd cli && npm run build"
   },
   "author": "Hiraoku Shinichi <s.hiraoku@gmail.com>",
   "license": "MIT",
