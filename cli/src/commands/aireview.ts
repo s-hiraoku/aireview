@@ -1,5 +1,5 @@
-import { black, bgCyan } from "kolorist";
-import { intro, spinner } from "@clack/prompts";
+import { black, bgCyan, green, red } from "kolorist";
+import { intro, outro, spinner } from "@clack/prompts";
 import { assertGitRepo } from "../utils/git";
 import { outputDiffFile, saveGitDiffToFile } from "../utils/file";
 import { promises as fs } from "fs";
@@ -22,8 +22,10 @@ export const aireview = async () => {
     } finally {
       extractingFiles.stop();
     }
-  } catch (err) {
-    console.error("Error occurred in aireview function", err);
-    throw err;
+    outro(`${green("✔")} File output succeeded!`);
+  } catch (error) {
+    outro(`${red("✖")} ${error.message}`);
+    console.error("Error occurred in aireview function", error);
+    throw error;
   }
 };
