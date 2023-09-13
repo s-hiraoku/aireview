@@ -8,8 +8,8 @@
     "review"
   ],
   "scripts": {
-    "app:start": "cd app && npm start",
-    "app:build": "cd app && npm run build",
+    "chat:start": "cd chat && npm start",
+    "chat:build": "cd chat && npm run build",
     "cli:build": "cd cli && npm run build"
   },
   "author": "Hiraoku Shinichi <s.hiraoku@gmail.com>",
