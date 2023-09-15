@@ -1,6 +1,6 @@
 {
-  "name": "aireview",
-  "version": "0.0.0-semantic-release",
+  "name": "@hiraoku/aireview",
+  "version": "0.1.0",
   "description": "AI code review of changes from git diffs.",
   "keywords": [
     "ai",
