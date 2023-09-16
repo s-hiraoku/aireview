@@ -8,6 +8,12 @@
     "git",
     "review"
   ],
+  "scripts": {
+    "build": "pkgroll --minify",
+    "lint": "eslint --cache .",
+    "type-check": "tsc --noEmit",
+    "start": "pnpm build && node dist/cli.mjs"
+  },
   "license": "MIT",
   "type": "module",
   "files": [
