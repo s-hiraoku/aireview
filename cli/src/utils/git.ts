@@ -19,6 +19,24 @@ export const getGitDiff = async (): Promise<string> => {
     const { stdout } = await execa("git", ["diff"]);
     return stdout;
   } catch (error) {
-    throw new Error(`Failed to get git diff: ${error.message}`);
+    throw new Error(`Failed to get git diff(getGitDiff): ${error.message}`);
   }
 };
+
+export const getGitDiffFiles = async (): Promise<string[]> => {
+  try {
+    const { stdout: files } = await execa("git", ["diff", "--name-only"]);
+    if (!files) {
+      return [];
+    }
+    return files.split("\n");
+  } catch (error) {
+    throw new Error(
+      `Failed to get git diff(getGitDiffFiles): ${error.message}`
+    );
+  }
+};
+export const getCheckGitDiffFilesMessage = (files: string[]) =>
+  `Detected ${files.length.toLocaleString()} change file${
+    files.length > 1 ? "s" : ""
+  }`;
