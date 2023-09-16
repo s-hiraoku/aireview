@@ -8,6 +8,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.6.0
     version: 20.6.0
+  clean-pkg-json:
+    specifier: ^1.2.0
+    version: 1.2.0
   pkgroll:
     specifier: ^1.11.0
     version: 1.11.0
@@ -347,6 +350,11 @@ packages:
   /builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
     engines: {node: '>=6'}
+    dev: true
+
+  /clean-pkg-json@1.2.0:
+    resolution: {integrity: sha512-QHBWWOtpSCv5nfMFKwyxn4WMvkYE0msxj5xiqejYGqYepWVrK7O/om1Vn6nSl/WPtYn8ge9YmSCbTi1Hp8k+Hg==}
+    hasBin: true
     dev: true
 
   /commondir@1.0.1:
