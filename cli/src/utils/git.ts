@@ -14,28 +14,44 @@ export const assertGitRepo = async (): Promise<string> => {
   return stdout;
 };
 
-export const getGitDiff = async (): Promise<string> => {
+type GetDiFFOptions = {
+  staged?: boolean;
+  branch?: string;
+  nameOnly?: boolean;
+};
+
+const defaultGetGitDiff: GetDiFFOptions = {
+  staged: false,
+  branch: "",
+  nameOnly: false,
+};
+export const getGitDiff = async ({
+  staged = false,
+  branch = "",
+  nameOnly = false,
+}: GetDiFFOptions = defaultGetGitDiff): Promise<string> => {
+  const args = ["diff"];
+
+  if (staged) {
+    args.push("--staged");
+  }
+
+  if (branch !== "") {
+    args.push(branch);
+  }
+
+  if (nameOnly) {
+    args.push("--name-only");
+  }
+
   try {
-    const { stdout } = await execa("git", ["diff"]);
+    const { stdout } = await execa("git", args);
     return stdout;
   } catch (error) {
     throw new Error(`Failed to get git diff(getGitDiff): ${error.message}`);
   }
 };
 
-export const getGitDiffFiles = async (): Promise<string[]> => {
-  try {
-    const { stdout: files } = await execa("git", ["diff", "--name-only"]);
-    if (!files) {
-      return [];
-    }
-    return files.split("\n");
-  } catch (error) {
-    throw new Error(
-      `Failed to get git diff(getGitDiffFiles): ${error.message}`
-    );
-  }
-};
 export const getCheckGitDiffFilesMessage = (files: string[]) =>
   `Detected ${files.length.toLocaleString()} change file${
     files.length > 1 ? "s" : ""
