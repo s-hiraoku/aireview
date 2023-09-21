@@ -8,13 +8,20 @@ cli(
   {
     name: "aireview",
     version,
-    flags: {},
+    flags: {
+      output: {
+        type: Boolean,
+        alias: "o",
+        description: "Output Files before compression",
+        default: false,
+      },
+    },
     help: {
       description,
     },
   },
-  () => {
-    aireview();
+  (argv) => {
+    aireview(argv.flags.output);
   },
   rawArgv
 );

@@ -25,6 +25,7 @@ const defaultGetGitDiff: GetDiFFOptions = {
   branch: "",
   nameOnly: false,
 };
+
 export const getGitDiff = async ({
   staged = false,
   branch = "",
@@ -56,3 +57,18 @@ export const getCheckGitDiffFilesMessage = (files: string[]) =>
   `Detected ${files.length.toLocaleString()} change file${
     files.length > 1 ? "s" : ""
   }`;
+
+const defaultHash = "HEAD";
+
+export const getGitShow = async (
+  filePath: string,
+  hash: string = defaultHash
+): Promise<string> => {
+  const hashFilePath = `${hash}:${filePath}`;
+  try {
+    const { stdout } = await execa("git", ["show", hashFilePath]);
+    return stdout;
+  } catch (error) {
+    throw new Error(`Failed to get git show(getGitShow): ${error.message}`);
+  }
+};

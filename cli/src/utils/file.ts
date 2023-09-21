@@ -2,7 +2,7 @@ import { execa } from "execa";
 import { KnownError } from "./error.js";
 import { promises as fs } from "fs";
 import path from "path";
-import { getGitDiff } from "./git.js";
+import { getGitDiff, getGitShow } from "./git.js";
 
 export const archiveDirectoryAsZip = async (
   sourceDirectory: string,
@@ -42,6 +42,8 @@ export const outputGitDiffsByDirectory = async (
     const diffFiles = getDiffFiles(diffOutput);
 
     await makeDiffFilesDirectory(outputDirectory, diffFiles);
+
+    await saveOriginalFiles(outputDirectory, diffFiles);
 
     await saveDiffOutput(outputDirectory, diffFiles, diffOutput);
   } catch (error) {
@@ -90,6 +92,32 @@ const makeDiffFilesDirectory = async (
   }
 };
 
+const saveOriginalFiles = async (
+  outputDirectory: string,
+  diffFiles: DiffFiles
+): Promise<void> => {
+  try {
+    await Promise.all(
+      diffFiles.map(async ({ path: filePath, name: fileName }) => {
+        const fileContent = await getGitShow(filePath);
+        console.log(fileName);
+        await fs.writeFile(
+          path.join(
+            process.cwd(),
+            outputDirectory,
+            fileName.split(".")[0],
+            fileName
+          ),
+          fileContent
+        );
+      })
+    );
+  } catch (error) {
+    console.error(`Failed to write file(saveOriginalFiles)`, error);
+    throw error;
+  }
+};
+
 const saveDiffOutput = async (
   outputDirectory: string,
   diffFiles: DiffFiles,
@@ -112,7 +140,7 @@ const saveDiffOutput = async (
       })
     );
   } catch (error) {
-    console.error(`Failed to write file`, error);
+    console.error(`Failed to write file(saveDiffOutput)`, error);
     throw error;
   }
 };
