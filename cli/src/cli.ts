@@ -15,12 +15,22 @@ cli(
         description: "Output Files before compression",
         default: false,
       },
+      version: {
+        type: String,
+        alias: "v",
+        description: "Show version",
+        default: false,
+      },
     },
     help: {
       description,
     },
   },
   (argv) => {
+    console.log(argv);
+    if (argv.flags.version) {
+      return console.log(version);
+    }
     aireview(argv.flags.output);
   },
   rawArgv

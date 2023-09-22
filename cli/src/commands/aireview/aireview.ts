@@ -23,6 +23,8 @@ export const aireview = async (output: boolean) => {
     intro(bgCyan(black(" aireview ")));
     await assertGitRepo();
 
+    await checkExistStagedFiles();
+
     const resultMessage = await processGitDiffFiles();
     const extractionStatus = await handleDiffFiles(cwdDiffFilesDir, output);
 
@@ -47,7 +49,7 @@ const processGitDiffFiles = async (): Promise<ProcessResult> => {
   checkGitDiffFiles.start("Checking Git Diff Files...");
 
   try {
-    const outputGitDiff = await getGitDiff({ nameOnly: true });
+    const outputGitDiff = await getGitDiff({ staged: true, nameOnly: true });
     const diffFiles = outputGitDiff.split("\n").filter(Boolean);
 
     if (diffFiles.length === 0) {
@@ -76,6 +78,7 @@ const handleDiffFiles = async (
 
   try {
     await removeDirectory(cwdDiffFilesDir);
+    await removeDirectory(ZIP_FILE_NAME);
     await outputGitDiffsByDirectory(DIFF_FILES_DIR);
     await archiveDirectoryAsZip(DIFF_FILES_DIR, ZIP_FILE_NAME);
     if (!remainDiffFiles) {
@@ -88,5 +91,28 @@ const handleDiffFiles = async (
     throw err;
   } finally {
     extractingFiles.stop();
+  }
+};
+
+const checkExistStagedFiles = async () => {
+  const checkStagedFiles = spinner();
+  checkStagedFiles.start("Checking Staged Files...");
+
+  try {
+    const outputGitDiff = await getGitDiff({ staged: true, nameOnly: true });
+    const diffFiles = outputGitDiff.split("\n").filter(Boolean);
+
+    if (diffFiles.length === 0) {
+      checkStagedFiles.stop("No staged files found!");
+      throw new Error("No staged files found! Please check your staged files.");
+    }
+
+    checkStagedFiles.stop(
+      `Staged files:\n${diffFiles.map((file) => `     ${file}`).join("\n")}`
+    );
+
+    return PROCESS_RESULT.Success;
+  } catch (error) {
+    throw new KnownError(error.message);
   }
 };
