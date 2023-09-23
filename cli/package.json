@@ -1,6 +1,6 @@
 {
   "name": "@hiraoku/aireview-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "AI code review of changes from git diffs.",
   "author": "Hiraoku Shinichi <s.hiraoku@gmail.com>",
   "keywords": [
