@@ -38,7 +38,7 @@ export const outputGitDiffsByDirectory = async (
   outputDirectory: string
 ): Promise<void> => {
   try {
-    const diffOutput = await getGitDiff();
+    const diffOutput = await getGitDiff({ staged: true });
     const diffFiles = getDiffFiles(diffOutput);
 
     await makeDiffFilesDirectory(outputDirectory, diffFiles);
@@ -133,7 +133,7 @@ const saveDiffOutput = async (
             process.cwd(),
             outputDirectory,
             fileName.split(".")[0],
-            fileName.replace(/\.ts$/, ".diff")
+            fileName.replace(/\.[^\.]+$/, ".diff")
           ),
           content
         );

@@ -7,7 +7,6 @@ const rawArgv = process.argv.slice(2);
 cli(
   {
     name: "aireview",
-    version,
     flags: {
       output: {
         type: Boolean,
@@ -16,7 +15,7 @@ cli(
         default: false,
       },
       version: {
-        type: String,
+        type: Boolean,
         alias: "v",
         description: "Show version",
         default: false,
@@ -27,7 +26,6 @@ cli(
     },
   },
   (argv) => {
-    console.log(argv);
     if (argv.flags.version) {
       return console.log(version);
     }

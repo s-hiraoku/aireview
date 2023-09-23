@@ -10,7 +10,7 @@ import {
   outputGitDiffsByDirectory,
   removeDirectory,
 } from "../../utils/file";
-import { KnownError } from "../../utils/error";
+import { KnownError, handleCliError } from "../../utils/error";
 import path from "path";
 
 const ZIP_FILE_NAME = "diff.zip";
@@ -33,8 +33,8 @@ export const aireview = async (output: boolean) => {
     outro(`${green("✔")} File output succeeded!`);
   } catch (error) {
     outro(`${red("✖")} ${error.message}`);
-    console.error("Error occurred in aireview function", error);
-    throw error;
+    handleCliError(error);
+    process.exit(1);
   }
 };
 
@@ -104,7 +104,9 @@ const checkExistStagedFiles = async () => {
 
     if (diffFiles.length === 0) {
       checkStagedFiles.stop("No staged files found!");
-      throw new Error("No staged files found! Please check your staged files.");
+      throw new KnownError(
+        "No staged files found! Please check your staged files."
+      );
     }
 
     checkStagedFiles.stop(
