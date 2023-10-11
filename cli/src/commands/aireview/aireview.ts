@@ -1,11 +1,6 @@
 import { black, bgCyan, green, red } from "kolorist";
 import { intro, outro, spinner } from "@clack/prompts";
-import {
-  assertGitRepo,
-  getCheckGitDiffFilesMessage,
-  getGitDiff,
-  getGitShow,
-} from "../../utils/git";
+import { assertGitRepo, getGitDiff, getGitShow } from "../../utils/git";
 import { archiveDirectoryAsZip, removeDirectory } from "../../utils/file";
 import { KnownError, handleCliError } from "../../utils/error";
 import path from "path";
@@ -177,7 +172,6 @@ const saveOriginalFiles = async (
     await Promise.all(
       diffFiles.map(async ({ path: filePath, name: fileName }) => {
         const fileContent = await getGitShow(filePath);
-        console.log(fileName);
         await fs.writeFile(
           path.join(
             process.cwd(),
@@ -227,10 +221,14 @@ const separateDiffFiles = (
   diffOutput: string
 ): DiffFiles => {
   return diffFiles.map((file) => {
-    const diffFile = diffOutput.split(
-      `diff --git a/${file.path} b/${file.path}`
-    )[1];
+    const splitPattern = `diff --git a/${file.path} b/${file.path}`;
+    const parts = diffOutput.split(splitPattern);
+    const diffFile = parts[1] || "";
 
-    return { path: file.path, name: file.name, content: diffFile };
+    return {
+      path: file.path,
+      name: file.name,
+      content: splitPattern + diffFile,
+    };
   });
 };

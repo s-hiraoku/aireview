@@ -53,11 +53,6 @@ export const getGitDiff = async ({
   }
 };
 
-export const getCheckGitDiffFilesMessage = (files: string[]) =>
-  `Detected ${files.length.toLocaleString()} change file${
-    files.length > 1 ? "s" : ""
-  }`;
-
 const defaultHash = "HEAD";
 
 export const getGitShow = async (
