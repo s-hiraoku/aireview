@@ -1,14 +1,16 @@
 import { black, bgCyan, green, red } from "kolorist";
 import { intro, outro, spinner } from "@clack/prompts";
 import { assertGitRepo, getGitDiff, getGitShow } from "../../utils/git";
-import { archiveDirectoryAsZip, removeDirectory } from "../../utils/file";
+import {
+  archiveDirectoryAsZip,
+  findAvailableDirectory,
+  removeDirectory,
+} from "../../utils/file";
 import { KnownError, handleCliError } from "../../utils/error";
 import path from "path";
 import { DiffFiles } from "../../types/aireview";
 import { promises as fs } from "fs";
-
-const ZIP_FILE_NAME = "diff.zip";
-const DIFF_FILES_DIR = "git-diff-files";
+import { DIFF_EXTENSION, DIFF_FILES_DIR, ZIP_FILE_NAME } from "../../constants";
 
 export const aireview = async (output: boolean) => {
   try {
@@ -73,8 +75,10 @@ const handleDiffFiles = async (
   try {
     await removeDirectory(cwdDiffFilesDir);
     await removeDirectory(ZIP_FILE_NAME);
+
     await outputGitDiffsByDirectory(DIFF_FILES_DIR);
     await archiveDirectoryAsZip(DIFF_FILES_DIR, ZIP_FILE_NAME);
+
     if (!remainDiffFiles) {
       await removeDirectory(cwdDiffFilesDir);
     }
@@ -151,12 +155,27 @@ const makeDiffFilesDirectory = async (
   diffFiles: DiffFiles
 ) => {
   const filePath = path.join(process.cwd(), outputDirectory);
+  const directoryNames: string[] = [];
+
+  // If there is a duplicate name in diffFiles, create a directory with the name appended with __index.
+  diffFiles.forEach((file) => {
+    let baseName = file.name.split(".")[0];
+    let newName = baseName;
+    let index = 1;
+
+    while (directoryNames.includes(newName)) {
+      newName = `${baseName}__${index}`;
+      index++;
+    }
+
+    directoryNames.push(newName);
+  });
 
   try {
     await Promise.all(
-      diffFiles
-        .map((file) => path.join(filePath, file.name.split(".")[0]))
-        .map((dirPath) => fs.mkdir(dirPath, { recursive: true }))
+      directoryNames.map((dirName) =>
+        fs.mkdir(path.join(filePath, dirName), { recursive: true })
+      )
     );
   } catch (error) {
     console.error(`Failed to make directory at ${filePath}`, error);
@@ -169,20 +188,14 @@ const saveOriginalFiles = async (
   diffFiles: DiffFiles
 ): Promise<void> => {
   try {
-    await Promise.all(
-      diffFiles.map(async ({ path: filePath, name: fileName }) => {
-        const fileContent = await getGitShow(filePath);
-        await fs.writeFile(
-          path.join(
-            process.cwd(),
-            outputDirectory,
-            fileName.split(".")[0],
-            fileName
-          ),
-          fileContent
-        );
-      })
-    );
+    for (const { path: filePath, name: fileName } of diffFiles) {
+      const fileContent = await getGitShow(filePath);
+      const saveDirectoryPath = await findAvailableDirectory(
+        path.join(process.cwd(), outputDirectory, fileName.split(".")[0]),
+        fileName
+      );
+      await fs.writeFile(path.join(saveDirectoryPath, fileName), fileContent);
+    }
   } catch (error) {
     console.error(`Failed to write file(saveOriginalFiles)`, error);
     throw error;
@@ -197,19 +210,19 @@ const saveDiffOutput = async (
   const separateDiffs = separateDiffFiles(diffFiles, diffOutput);
 
   try {
-    await Promise.all(
-      separateDiffs.map(async ({ name: fileName, content }) => {
-        await fs.writeFile(
-          path.join(
-            process.cwd(),
-            outputDirectory,
-            fileName.split(".")[0],
-            fileName.replace(/\.[^\.]+$/, ".diff")
-          ),
-          content
-        );
-      })
-    );
+    for (const { name: fileName, content } of separateDiffs) {
+      const saveDirectoryPath = await findAvailableDirectory(
+        path.join(process.cwd(), outputDirectory, fileName.split(".")[0]),
+        fileName.replace(/\.[^\.]+$/, DIFF_EXTENSION)
+      );
+      await fs.writeFile(
+        path.join(
+          saveDirectoryPath,
+          fileName.replace(/\.[^\.]+$/, DIFF_EXTENSION)
+        ),
+        content
+      );
+    }
   } catch (error) {
     console.error(`Failed to write file(saveDiffOutput)`, error);
     throw error;
@@ -221,14 +234,29 @@ const separateDiffFiles = (
   diffOutput: string
 ): DiffFiles => {
   return diffFiles.map((file) => {
-    const splitPattern = `diff --git a/${file.path} b/${file.path}`;
-    const parts = diffOutput.split(splitPattern);
-    const diffFile = parts[1] || "";
+    const startPattern = `diff --git a/${file.path} b/${file.path}`;
+    const startIndex = diffOutput.indexOf(startPattern);
+
+    if (startIndex === -1) {
+      throw new Error(
+        `Failed to find start pattern(${startPattern}) in diff output`
+      );
+    }
+
+    const nextDiffIndex = diffOutput.indexOf(
+      "diff --git",
+      startIndex + startPattern.length
+    );
+
+    const content =
+      nextDiffIndex !== -1
+        ? diffOutput.slice(startIndex, nextDiffIndex)
+        : diffOutput.slice(startIndex);
 
     return {
       path: file.path,
       name: file.name,
-      content: splitPattern + diffFile,
+      content: content,
     };
   });
 };
