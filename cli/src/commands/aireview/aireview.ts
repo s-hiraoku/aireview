@@ -1,5 +1,5 @@
 import { black, bgCyan, green, red } from "kolorist";
-import { intro, outro, spinner } from "@clack/prompts";
+import { intro, outro, spinner, confirm } from "@clack/prompts";
 import { assertGitRepo, getGitDiff, getGitShow } from "../../utils/git";
 import {
   archiveDirectoryAsZip,
@@ -111,6 +111,15 @@ const checkExistStagedFiles = async () => {
       `Staged files:\n${diffFiles.map((file) => `     ${file}`).join("\n")}`
     );
 
+    const result = await confirm({
+      message:
+        "Would you like to continue processing with the above Staged files?",
+    });
+
+    if (!result) {
+      outro(`${red("✖")} Process canceled!`);
+      process.exit(1);
+    }
     return PROCESS_RESULT.Success;
   } catch (error) {
     throw new KnownError(error.message);
