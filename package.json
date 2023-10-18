@@ -11,13 +11,15 @@
     "chat:start": "cd chat && pnpm start",
     "chat:build": "cd chat && pnpm run build",
     "cli:build": "cd cli && pnpm run build",
-    "cli:start": "cd cli && pnpm start"
+    "cli:start": "cd cli && pnpm start",
+    "cli:test": "cd cli && pnpm test"
   },
   "author": "Hiraoku Shinichi <s.hiraoku@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.6.0",
+    "clean-pkg-json": "^1.2.0",
     "pkgroll": "^1.11.0",
-    "clean-pkg-json": "^1.2.0"
+    "vitest": "^0.34.6"
   }
 }

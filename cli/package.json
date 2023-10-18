@@ -12,7 +12,8 @@
     "build": "pkgroll --minify",
     "lint": "eslint --cache .",
     "type-check": "tsc --noEmit",
-    "start": "pnpm build && node dist/cli.mjs"
+    "start": "pnpm build && node dist/cli.mjs",
+    "test": "vitest"
   },
   "license": "MIT",
   "type": "module",
