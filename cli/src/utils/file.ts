@@ -1,30 +1,23 @@
-import { execa } from "execa";
-import { KnownError } from "./error.js";
-import { promises as fs } from "fs";
+import { execa } from 'execa';
+import { KnownError } from './error.js';
+import { promises as fs } from 'fs';
 
-export const archiveDirectoryAsZip = async (
-  sourceDirectory: string,
-  outputZip: string
-) => {
+export const archiveDirectoryAsZip = async (sourceDirectory: string, outputZip: string) => {
   try {
-    const { stdout } = await execa("zip", ["-r", outputZip, sourceDirectory]);
+    const { stdout } = await execa('zip', ['-r', outputZip, sourceDirectory]);
     return stdout;
   } catch (error) {
-    throw new KnownError("Failed to make zip file!");
+    throw new KnownError('Failed to make zip file!');
   }
 };
 
-export const removeDirectory = async (
-  dirPath: string,
-  recursive: boolean = true,
-  ignoreIfAbsent: boolean = true
-) => {
+export const removeDirectory = async (dirPath: string, recursive: boolean = true, ignoreIfAbsent: boolean = true) => {
   try {
     await fs.access(dirPath);
 
     await fs.rm(dirPath, { recursive });
   } catch (error) {
-    if (error.code === "ENOENT" && ignoreIfAbsent) {
+    if (error.code === 'ENOENT' && ignoreIfAbsent) {
       return;
     }
     console.error(`Failed to remove directory at ${dirPath}`, error);
@@ -32,10 +25,7 @@ export const removeDirectory = async (
   }
 };
 
-export const isFileAbsentOrDirectoryEmpty = async (
-  dirPath: string,
-  fileName?: string
-): Promise<boolean> => {
+export const isFileAbsentOrDirectoryEmpty = async (dirPath: string, fileName?: string): Promise<boolean> => {
   try {
     const files = await fs.readdir(dirPath);
     return fileName ? !files.includes(fileName) : files.length === 0;
@@ -45,10 +35,7 @@ export const isFileAbsentOrDirectoryEmpty = async (
   }
 };
 
-export const findAvailableDirectory = async (
-  baseDir: string,
-  fileName?: string
-): Promise<string> => {
+export const findAvailableDirectory = async (baseDir: string, fileName?: string): Promise<string> => {
   if (await isFileAbsentOrDirectoryEmpty(baseDir, fileName)) {
     return baseDir;
   }

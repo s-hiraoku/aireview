@@ -1,1 +1,1 @@
-export { aireview } from "./aireview";
+export { aireview } from './aireview';
