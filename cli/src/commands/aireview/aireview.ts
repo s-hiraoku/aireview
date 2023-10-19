@@ -47,8 +47,8 @@ const postMessageWithZipFileToSlack = async () => {
   const client = new WebClient(SLACK_BOT_TOKEN);
   const filePath = path.join(process.cwd(), ZIP_FILE_NAME);
   const fileName = ZIP_FILE_NAME;
-  const title = 'diff.zip';
-  const message = `<@${SLACK_BOT_ID}>${REVIEW_REQUEST_MESSAGE}`;
+  const title = ZIP_FILE_NAME;
+  const message = `<@${SLACK_BOT_ID}>\n${REVIEW_REQUEST_MESSAGE}`;
 
   try {
     const fd = await open(filePath, 'r');
