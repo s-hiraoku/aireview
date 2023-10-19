@@ -1,4 +1,4 @@
-import { black, bgCyan, green, red } from "kolorist";
+import { black, bgCyan, green, red, bgLightGreen } from "kolorist";
 import { intro, outro, spinner, confirm } from "@clack/prompts";
 import { assertGitRepo, getGitDiff, getGitShow } from "../../utils/git";
 import {
@@ -10,7 +10,10 @@ import { KnownError, handleCliError } from "../../utils/error";
 import path from "path";
 import { DiffFiles } from "../../types/aireview";
 import { promises as fs } from "fs";
+import { open } from "node:fs/promises";
 import { DIFF_EXTENSION, DIFF_FILES_DIR, ZIP_FILE_NAME } from "../../constants";
+import { WebClient } from "@slack/web-api";
+import { getEnv } from "../../utils/env";
 
 export const aireview = async (output: boolean) => {
   try {
@@ -22,14 +25,46 @@ export const aireview = async (output: boolean) => {
     await checkExistStagedFiles();
 
     const resultMessage = await processGitDiffFiles();
-    const extractionStatus = await handleDiffFiles(cwdDiffFilesDir, output);
+    const extractionStatus = await createZipFile(cwdDiffFilesDir, output);
 
     if (!resultMessage || !extractionStatus) throw new Error("Process failed!");
 
     outro(`${green("✔")} File output succeeded!`);
+
+    await postMessageWithZipFileToSlack();
+
+    outro(`${green("✔")} Slack message sent successfully!`);
+    outro(`🎉 ${bgLightGreen("To be continued on Slack")}`);
+
+    process.exit(0);
   } catch (error) {
     outro(`${red("✖")} ${error.message}`);
     handleCliError(error);
+    process.exit(1);
+  }
+};
+
+const REVIEW_REQUEST_MESSAGE = "Please review the following code.";
+const postMessageWithZipFileToSlack = async () => {
+  const { SLACK_BOT_TOKEN, SLACK_BOT_ID, SLACK_CHANNEL_ID } = getEnv();
+
+  const client = new WebClient(SLACK_BOT_TOKEN);
+  const filePath = path.join(process.cwd(), ZIP_FILE_NAME);
+  const fileName = ZIP_FILE_NAME;
+  const title = "diff.zip";
+  const message = `<@${SLACK_BOT_ID}>${REVIEW_REQUEST_MESSAGE}`;
+
+  try {
+    const fd = await open(filePath, "r");
+    await client.files.uploadV2({
+      channel_id: SLACK_CHANNEL_ID,
+      file: fd.createReadStream(),
+      filename: fileName,
+      title: title,
+      initial_comment: message,
+    });
+  } catch (error) {
+    outro(`${red("✖")} ${error.message}`);
     process.exit(1);
   }
 };
@@ -65,12 +100,12 @@ const processGitDiffFiles = async (): Promise<ProcessResult> => {
   }
 };
 
-const handleDiffFiles = async (
+const createZipFile = async (
   cwdDiffFilesDir: string,
   remainDiffFiles: boolean
 ): Promise<ProcessResult> => {
   const extractingFiles = spinner();
-  extractingFiles.start("Creating Diff Files...");
+  extractingFiles.start("Creating Zip File...");
 
   try {
     await removeDirectory(cwdDiffFilesDir);
@@ -85,7 +120,7 @@ const handleDiffFiles = async (
 
     return PROCESS_RESULT.Success;
   } catch (err) {
-    console.error("Error occurred while handling diff file", err);
+    console.error("An error occurred while creating the zip file.", err);
     throw err;
   } finally {
     extractingFiles.stop();
