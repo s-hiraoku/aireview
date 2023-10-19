@@ -63,7 +63,8 @@ export const getGitShow = async (
   try {
     const { stdout } = await execa("git", ["show", hashFilePath]);
     return stdout;
-  } catch (error) {
-    throw new Error(`Failed to get git show(getGitShow): ${error.message}`);
+  } catch (_) {
+    // If the file does not exist in the specified hash, return an empty string.
+    return "";
   }
 };
