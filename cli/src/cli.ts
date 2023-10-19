@@ -1,6 +1,6 @@
 import { cli } from 'cleye';
 import { version, description } from '../package.json';
-import { aireview } from './commands/aireview';
+import { aireview, getEnv, setEnv } from './commands/aireview';
 
 const rawArgv = process.argv.slice(2);
 
@@ -20,6 +20,18 @@ cli(
         description: 'Show version',
         default: false,
       },
+      init: {
+        type: Boolean,
+        alias: 'i',
+        description: 'Initialize aireview',
+        default: false,
+      },
+      env: {
+        type: Boolean,
+        alias: 'e',
+        description: 'Display environment variables',
+        default: false,
+      },
     },
     help: {
       description,
@@ -28,6 +40,14 @@ cli(
   (argv) => {
     if (argv.flags.version) {
       return console.log(version);
+    }
+    if (argv.flags.init) {
+      setEnv();
+      return;
+    }
+    if (argv.flags.env) {
+      getEnv();
+      return;
     }
     aireview(argv.flags.output);
   },
