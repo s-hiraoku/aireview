@@ -1,4 +1,4 @@
-import { black, bgCyan, green, red, bgLightGreen } from 'kolorist';
+import { black, bgCyan, green, red } from 'kolorist';
 import { intro, outro, spinner, confirm } from '@clack/prompts';
 import { assertGitRepo, getGitDiff, getGitShow } from '../../utils/git';
 import { archiveDirectoryAsZip, findAvailableDirectory, removeDirectory } from '../../utils/file';
@@ -30,7 +30,7 @@ export const aireview = async (output: boolean) => {
     await postMessageWithZipFileToSlack();
 
     outro(`${green('✔')} Slack message sent successfully!`);
-    outro(`🎉 ${bgLightGreen('To be continued on Slack')}`);
+    outro(`🎉 ${bgCyan(' To be continued on Slack ')}`);
 
     process.exit(0);
   } catch (error) {
