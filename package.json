@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "clean-pkg-json": "^1.2.0",
     "pkgroll": "^1.11.0",
-    "vitest": "^0.34.6"
+    "vitest": "^1.0.0"
   },
   "dependencies": {
     "@slack/web-api": "^6.9.0",
