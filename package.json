@@ -24,7 +24,7 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "@slack/web-api": "^6.9.0",
+    "@slack/web-api": "^7.0.0",
     "ts-dotenv": "^0.9.1"
   }
 }
