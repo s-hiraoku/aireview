@@ -33,7 +33,7 @@
     "pkgroll": "^1.11.0",
     "eslint": "^8.35.0",
     "tsx": "^3.12.3",
-    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@slack/web-api": "^6.9.0",
     "ts-dotenv": "^0.9.1"
   }
